@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-montserrat);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+}
+
+html[data-a11y-contrast="high"] {
+  --background: #ffffff;
+  --foreground: #000000;
+}
+
+html[data-a11y-contrast="high"] .a11y-contrast-root { filter: contrast(1.4) saturate(0%) !important; }
+html[data-a11y-contrast="high"] *,
+html[data-a11y-contrast="high"] *::before,
+html[data-a11y-contrast="high"] *::after { outline-color: #000 !important; }
+html[data-a11y-contrast="high"] *:focus { outline: 3px solid #000 !important; outline-offset: 2px !important; }
+
+html[data-a11y-contrast="high"] .a11y-toolbar { filter: none !important; }
+
+/* Zoom accessibility feature - keep toolbar at normal size */
+html[data-a11y-fontscale="1.25"] .a11y-toolbar { zoom: 80%; }
+html[data-a11y-fontscale="1.5"] .a11y-toolbar { zoom: 66.67%; }
+html[data-a11y-fontscale="2"] .a11y-toolbar { zoom: 50%; }
+
+@media (prefers-reduced-motion: no-preference) {
+  html[data-a11y-motion="reduce"] *,
+  html[data-a11y-motion="reduce"] *::before,
+  html[data-a11y-motion="reduce"] *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html[data-a11y-links="underline"] a { text-decoration: underline !important; }
+
+@font-face {
+  font-family: "OpenDyslexic";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src:
+    local("OpenDyslexic"), local("OpenDyslexic3"),
+    url("/fonts/OpenDyslexic-Regular.woff2") format("woff2"),
+    url("/fonts/OpenDyslexic-Regular.woff") format("woff"),
+    url("https://cdn.jsdelivr.net/gh/antijingoist/open-dyslexic/otf/OpenDyslexic-Regular.otf") format("opentype");
+}
+@font-face {
+  font-family: "OpenDyslexic";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src:
+    local("OpenDyslexic Italic"), local("OpenDyslexic-Italic"),
+    url("/fonts/OpenDyslexic-Italic.woff2") format("woff2"),
+    url("/fonts/OpenDyslexic-Italic.woff") format("woff"),
+    url("https://cdn.jsdelivr.net/gh/antijingoist/open-dyslexic/otf/OpenDyslexic-Italic.otf") format("opentype");
+}
+@font-face {
+  font-family: "OpenDyslexic";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src:
+    local("OpenDyslexic Bold"), local("OpenDyslexic-Bold"),
+    url("/fonts/OpenDyslexic-Bold.woff2") format("woff2"),
+    url("/fonts/OpenDyslexic-Bold.woff") format("woff"),
+    url("https://cdn.jsdelivr.net/gh/antijingoist/open-dyslexic/otf/OpenDyslexic-Bold.otf") format("opentype");
+}
+html[data-a11y-dyslexia="on"] { --font-montserrat: "OpenDyslexic", Arial, Helvetica, sans-serif; }
+html[data-a11y-dyslexia="on"] body,
+html[data-a11y-dyslexia="on"] body * { font-family: "OpenDyslexic", Arial, Helvetica, sans-serif !important; }
+
+html[data-a11y-colorblind="mono"] .a11y-contrast-root { filter: grayscale(100%) !important; }
+html[data-a11y-colorblind="rg"] .a11y-contrast-root { filter: url(#cb-rg) !important; }
+html[data-a11y-colorblind="by"] .a11y-contrast-root { filter: url(#cb-by) !important; }
+
+html[data-a11y-colorblind] .a11y-toolbar { filter: none !important; }
