@@ -286,10 +286,10 @@
 
 
 
-import { useCallback, useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import Link from "next/link";
 import api from "@/lib/api";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 export default function TestDetailPage() {
   const params = useParams();
@@ -330,7 +330,7 @@ export default function TestDetailPage() {
 
     setLoading(true);
     try {
-      const res = await api.get(`/api/admin/tests/${id}`, {
+      const res = await api.get(`/admin/tests/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTest(res.data);
@@ -365,7 +365,7 @@ export default function TestDetailPage() {
     try {
       const isChoice = editType === "MULTIPLE_CHOICE" || editType === "CHECKBOX";
       await api.put(
-        `/api/admin/questions/${editId}`,
+        `/admin/questions/${editId}`,
         {
           text: editText,
           questionType: editType,
@@ -393,7 +393,7 @@ export default function TestDetailPage() {
     try {
       const isChoice = questionType === "MULTIPLE_CHOICE" || questionType === "CHECKBOX";
       await api.post(
-        `/api/admin/tests/${id}/questions`,
+        `/admin/tests/${id}/questions`,
         {
           text,
           questionType,
@@ -430,7 +430,7 @@ export default function TestDetailPage() {
   async function deleteQuestion(qid: number) {
     if (!token) return;
     try {
-      await api.delete(`/api/admin/questions/${qid}`, {
+      await api.delete(`/admin/questions/${qid}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       await fetchTest();
@@ -447,7 +447,7 @@ export default function TestDetailPage() {
     if (!confirm("Yakin ingin menghapus semua soal?")) return;
 
     try {
-      await api.delete(`/api/admin/tests/${id}/questions`, {
+      await api.delete(`/admin/tests/${id}/questions`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       await fetchTest();
@@ -633,7 +633,7 @@ export default function TestDetailPage() {
         </div>
 
         <div className="border rounded-lg overflow-x-auto">
-          <table className="w-full border-collapse min-w-[500px]">
+          <table className="w-full border-collapse min-w-125">
             <thead className="bg-gray-100 border-b">
               <tr>
                 <th className="p-3 text-left">ID</th>

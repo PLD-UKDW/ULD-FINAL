@@ -111,9 +111,10 @@
 "use client";
 
 import api from "@/lib/api";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { getAuthToken } from "@/lib/auth.client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function CreateTestPage() {
   const router = useRouter();
@@ -128,7 +129,7 @@ export default function CreateTestPage() {
   });
 
   useEffect(() => {
-    setToken(localStorage.getItem("token"));
+    setToken(getAuthToken());
   }, []);
 
   const addToast = (message: string, type: "success" | "error" | "info" = "info") => {
@@ -150,7 +151,7 @@ export default function CreateTestPage() {
     setSaving(true);
     try {
       const res = await api.post(
-        "/api/admin/tests",
+        "/admin/tests",
         {
           title: formData.title,
           description: formData.description,

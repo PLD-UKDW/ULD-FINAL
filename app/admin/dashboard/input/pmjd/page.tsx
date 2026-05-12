@@ -422,8 +422,9 @@
 "use client";
 
 import api from "@/lib/api";
-import { useCallback, useEffect, useState } from "react";
+import { getAuthToken } from "@/lib/auth.client";
 import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 
 export default function AdminDashboard() {
   const [token, setToken] = useState<string | null>(null);
@@ -433,7 +434,7 @@ export default function AdminDashboard() {
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" | "info" } | null>(null);
 
   useEffect(() => {
-    setToken(localStorage.getItem("token"));
+    setToken(getAuthToken());
   }, []);
 
   const addToast = (message: string, type: "success" | "error" | "info" = "info") => {
@@ -444,7 +445,7 @@ export default function AdminDashboard() {
   const fetchTests = useCallback(async () => {
     if (!token) return;
     try {
-      const res = await api.get("/api/admin/tests", {
+      const res = await api.get("/admin/tests", {
         headers: { Authorization: `Bearer ${token}` },
       });
       console.log("Tests response:", res.data);
@@ -458,7 +459,7 @@ export default function AdminDashboard() {
   const fetchAttempts = useCallback(async () => {
     if (!token) return;
     try {
-      const res = await api.get("/api/admin/attempts", {
+      const res = await api.get("/admin/attempts", {
         headers: { Authorization: `Bearer ${token}` },
       });
       console.log("Attempts response:", res.data);
@@ -494,7 +495,7 @@ export default function AdminDashboard() {
     if (!confirmed) return;
 
     try {
-      await api.delete(`/api/admin/tests/${testId}`, {
+      await api.delete(`/admin/tests/${testId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       addToast(`Test "${testTitle}" berhasil dihapus`, "success");

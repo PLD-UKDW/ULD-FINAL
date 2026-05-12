@@ -48,10 +48,10 @@ export default function KategoriDisabilitasPage() {
     const fetchKategori = useCallback(async () => {
         if (!token) return;
         try {
-            const res = await api.get("/mahasiswa/kategori-disabilitas", {
+            const res = await api.get("/mahasiswa/kategori-disabilitas-admin", {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            setKategoriList(res.data || []);
+            setKategoriList(Array.isArray(res.data) ? res.data : []);
         } catch {
             addToast("Gagal memuat kategori", "error");
         }
