@@ -9,7 +9,7 @@ type UploadRequest = Request & {
     file?: { filename: string };
 };
 
-const uploadDir = path.join(__dirname, "..", "..", "public", "uploads", "berita");
+const uploadDir = path.join(process.cwd(), "public", "uploads", "berita");
 console.log(`[beritaController] Upload directory: ${uploadDir}`);
 
 const parseImageNames = (contentImages: unknown): string[] => {
