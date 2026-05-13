@@ -256,8 +256,10 @@
 
 
 import { useSearchParams } from "next/navigation";
-import { API_BASE } from "@/lib/api";import { getAuthToken } from \"@/lib/auth.client\";import { useEffect, useState, useCallback } from "react";
+import { API_BASE } from "@/lib/api";
+import { getAuthToken } from "@/lib/auth.client";
 import { format } from "date-fns";
+import { useCallback, useEffect, useState } from "react";
 
 type Attempt = {
   id: number;
