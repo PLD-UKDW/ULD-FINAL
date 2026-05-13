@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
 import api from "@/lib/api";
-import { useTtsRate, getStoredTtsRate } from "@/lib/ttsRate";
+import { getStoredTtsRate, useTtsRate } from "@/lib/ttsRate";
+import { useParams, useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /* =====================================================
    DO TEST PAGE – SCREEN READER FIRST
@@ -179,6 +179,23 @@ export default function DoTestPage() {
     window.speechSynthesis.speak(u);
   };
 
+  /* ==========================
+     HELPER: PARSE OPTIONS (string or array)
+  ========================== */
+  const getOptionsArray = useCallback((options: any): string[] => {
+    if (!options) return [];
+    if (Array.isArray(options)) return options;
+    if (typeof options === "string") {
+      try {
+        const parsed = JSON.parse(options);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  }, []);
+
   // Sync ref dengan state
   useEffect(() => {
     isTypingRef.current = isTypingEssay;
@@ -274,7 +291,7 @@ export default function DoTestPage() {
     setUseTTS(localStorage.getItem("accessMode") !== "no-tts");
 
     api
-      .get(`/api/test/${id}`, {
+      .get(`/test/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -301,14 +318,14 @@ export default function DoTestPage() {
       const queue: string[] = [`Soal ${index + 1}. ...`, `${q.text} ...`];
 
       if (q.questionType === "MULTIPLE_CHOICE") {
-        q.options.forEach((opt: string, i: number) => {
+        getOptionsArray(q.options).forEach((opt: string, i: number) => {
           const label = getLetter(i);
           queue.push(` ${label}. ... ${opt} ...`);
         });
 
         queue.push("Gunakan panah atas dan bawah untuk memilih jawaban. ... Tekan enter untuk memilih.");
       } else if (q.questionType === "CHECKBOX") {
-        q.options.forEach((opt: string, i: number) => {
+        getOptionsArray(q.options).forEach((opt: string, i: number) => {
           const label = getLetter(i);
           queue.push(`${label}. ... ${opt} ...`);
         });
@@ -358,13 +375,13 @@ export default function DoTestPage() {
 
       // Tambahkan opsi soal pertama
       if (q.questionType === "MULTIPLE_CHOICE") {
-        q.options.forEach((opt: string, i: number) => {
+        getOptionsArray(q.options).forEach((opt: string, i: number) => {
           const label = getLetter(i);
           introAndFirstQuestion.push(` ${label}. ... ${opt} ...`);
         });
         introAndFirstQuestion.push("Gunakan panah atas dan bawah untuk berpindah jawaban. ... Tekan enter untuk memilih jawaban.");
       } else if (q.questionType === "CHECKBOX") {
-        q.options.forEach((opt: string, i: number) => {
+        getOptionsArray(q.options).forEach((opt: string, i: number) => {
           const label = getLetter(i);
           introAndFirstQuestion.push(` ${label}. ... ${opt} ...`);
         });
@@ -616,7 +633,7 @@ export default function DoTestPage() {
 
     try {
       const res = await api.post(
-        `/api/test/${id}/submit`,
+        `/test/${id}/submit`,
         { answers },
         {
           headers: {
@@ -684,7 +701,7 @@ export default function DoTestPage() {
 
           {q.questionType === "MULTIPLE_CHOICE" && (
             <div className="space-y-4">
-              {q.options.map((opt: string, i: number) => {
+              {getOptionsArray(q.options).map((opt: string, i: number) => {
                 const key = getLetter(i, false);
                 const isKeyboardFocused = useTTS && optionIndex === i;
 
@@ -703,7 +720,7 @@ export default function DoTestPage() {
 
           {q.questionType === "CHECKBOX" && (
             <div className="space-y-4">
-              {q.options.map((opt: string, i: number) => {
+              {getOptionsArray(q.options).map((opt: string, i: number) => {
                 const key = getLetter(i, false);
                 const selected = (answers[q.id] as string[]) || [];
                 const isKeyboardFocused = useTTS && optionIndex === i;

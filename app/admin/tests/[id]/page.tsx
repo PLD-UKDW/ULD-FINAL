@@ -287,6 +287,7 @@
 
 
 import api from "@/lib/api";
+import { getAuthToken } from "@/lib/auth.client";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -321,7 +322,7 @@ export default function TestDetailPage() {
   const [editScore, setEditScore] = useState("");
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
+    const storedToken = getAuthToken();
     setToken(storedToken);
   }, []);
 

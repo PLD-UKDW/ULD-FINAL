@@ -141,9 +141,10 @@
 
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { getAuthToken } from "@/lib/auth.client";
 import { ArrowLeft } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function AttemptReview() {
   const params = useParams();
@@ -197,7 +198,8 @@ export default function AttemptReview() {
   // LOAD TOKEN
   // ===============================
   useEffect(() => {
-    setToken(localStorage.getItem("token"));
+    const storedToken = getAuthToken();
+    setToken(storedToken);
   }, []);
 
   // ===============================
@@ -209,7 +211,8 @@ export default function AttemptReview() {
     setLoading(true);
     try {
       // Fetch attempt detail
-      const res = await fetch(`http://localhost:4000/api/admin/attempts/${attemptId}`, {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${API_BASE}/api/admin/attempts/${attemptId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -228,7 +231,8 @@ export default function AttemptReview() {
       } else if (data.testId || data.test?.id) {
         // Fetch test detail untuk mendapatkan questions
         const testId = data.testId || data.test?.id;
-        const testRes = await fetch(`http://localhost:4000/api/admin/tests/${testId}`, {
+        const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+        const testRes = await fetch(`${API_BASE}/api/admin/tests/${testId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -260,7 +264,8 @@ export default function AttemptReview() {
     const scrollPosition = window.scrollY;
 
     try {
-      await fetch(`http://localhost:4000/api/admin/attempts/${attemptId}/essay-score`, {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+      await fetch(`${API_BASE}/api/admin/attempts/${attemptId}/essay-score`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -297,7 +302,8 @@ export default function AttemptReview() {
     const scrollPosition = window.scrollY;
 
     try {
-      await fetch(`http://localhost:4000/api/admin/attempts/${attemptId}/mc-score`, {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+      await fetch(`${API_BASE}/api/admin/attempts/${attemptId}/mc-score`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -329,7 +335,8 @@ export default function AttemptReview() {
     if (!token) return;
 
     try {
-      const res = await fetch(`http://localhost:4000/api/admin/attempts/${attemptId}/score`, {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${API_BASE}/api/admin/attempts/${attemptId}/score`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -377,7 +384,8 @@ export default function AttemptReview() {
         payload.manualScore = manualFromFinal;
       }
 
-      const res = await fetch(`http://localhost:4000/api/admin/attempts/${attemptId}/score`, {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${API_BASE}/api/admin/attempts/${attemptId}/score`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -420,7 +428,8 @@ export default function AttemptReview() {
 
     (async () => {
       try {
-        const res = await fetch(`http://localhost:4000/api/admin/attempts/${attemptId}/score`, {
+        const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+        const res = await fetch(`${API_BASE}/api/admin/attempts/${attemptId}/score`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -446,8 +455,9 @@ export default function AttemptReview() {
   async function updatePassStatus() {
     if (!token) return;
 
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL;
     try {
-      const res = await fetch(`http://localhost:4000/api/admin/attempts/${attemptId}/status`, {
+      const res = await fetch(`${API_BASE}/api/admin/attempts/${attemptId}/status`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -157,7 +157,8 @@ export default function TestResultPage() {
     if (!token || !attemptId) return;
 
     try {
-      const res = await fetch(`http://localhost:4000/api/test/${id}/result?attemptId=${attemptId}`, { headers: { Authorization: `Bearer ${token}` } });
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${API_BASE}/api/test/${id}/result?attemptId=${attemptId}`, { headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json();
       setAttempt(data.attempt);
       setLastUpdated(new Date());
@@ -175,7 +176,8 @@ export default function TestResultPage() {
 
     fetchResult();
 
-    fetch(`http://localhost:4000/api/test/${id}`, {
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+    fetch(`${API_BASE}/api/test/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json())
@@ -280,18 +282,6 @@ export default function TestResultPage() {
 
     speakQueue(texts);
   }, [useTTS, attempt, test, displayedScore]);
-
-
-
-
-
-
-
-
-
-
-
-
 
   /* =====================================================
      KEYBOARD NAVIGATION

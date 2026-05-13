@@ -256,8 +256,7 @@
 
 
 import { useSearchParams } from "next/navigation";
-import { API_BASE } from "@/lib/api";
-import { useEffect, useState, useCallback } from "react";
+import { API_BASE } from "@/lib/api";import { getAuthToken } from \"@/lib/auth.client\";import { useEffect, useState, useCallback } from "react";
 import { format } from "date-fns";
 
 type Attempt = {
@@ -298,7 +297,7 @@ export default function AdminScoringPage() {
   const testIdFromURL = params.get("test");
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
+    const storedToken = getAuthToken();
     setToken(storedToken);
   }, []);
 

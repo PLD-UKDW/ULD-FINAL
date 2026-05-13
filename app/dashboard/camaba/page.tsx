@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import api from "@/lib/api";
+import { getAuthToken } from "@/lib/auth.client";
 import { useTtsRate } from "@/lib/ttsRate";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /* =====================================================
    DASHBOARD CAMABA – ACCESSIBILITY & SCREEN READER FIRST
@@ -169,14 +170,14 @@ export default function CamabaDashboardPage() {
      AUTH + FETCH TEST
   ========================== */
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getAuthToken();
     if (!token) {
       router.push("/login");
       return;
     }
 
     api
-      .get("/api/test", {
+      .get("/test", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

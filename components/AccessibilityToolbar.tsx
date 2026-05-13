@@ -485,7 +485,13 @@ export default function AccessibilityToolbar() {
                 <button
                   type="button"
                   aria-pressed={!!state.ttsEnabled}
-                  onClick={() => setState((s) => ({ ...s, ttsEnabled: !(s.ttsEnabled ?? false) }))}
+                  onClick={() => {
+                    const newEnabled = !(state.ttsEnabled ?? false);
+                    if (!newEnabled) {
+                      stopSpeaking();
+                    }
+                    setState((s) => ({ ...s, ttsEnabled: newEnabled }));
+                  }}
                   className={`px-3 py-1 rounded font-bold transition-colors shadow-md ${state.ttsEnabled ? "bg-green-600 hover:bg-green-700 text-white" : "bg-gray-300 hover:bg-gray-400 text-black"}`}
                 >
                   {state.ttsEnabled ? "ON" : "OFF"}

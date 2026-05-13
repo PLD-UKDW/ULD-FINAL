@@ -37,10 +37,10 @@ export default function DashboardPeserta() {
   const fetchData = async (token: string) => {
     try {
       const [testRes, statusRes] = await Promise.all([
-        api.get("/api/test", {
+        api.get("/test", {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        api.get("/api/test/status", {
+        api.get("/test/status", {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
