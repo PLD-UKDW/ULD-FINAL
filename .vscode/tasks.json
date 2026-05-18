@@ -1,0 +1,618 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "dev-3001",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"next",
+				"dev",
+				"--webpack",
+				"-p",
+				"3001"
+			],
+			"isBackground": true,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "build",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "build",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "build",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "start",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"start"
+			],
+			"isBackground": true,
+			"group": "build"
+		},
+		{
+			"label": "check-port-3000",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"netstat -ano | findstr :3000"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "check-port-3000-listening",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"netstat -ano | findstr LISTENING | findstr :3000"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "start-prod",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"start"
+			],
+			"isBackground": true,
+			"group": "build"
+		},
+		{
+			"label": "build-after-api-fix",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "probe-mahasiswa-endpoints",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"node -e \"const enc=(o)=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'1',role:'ADMIN'}),'x'].join('.'); const base='http://localhost:3000/api/mahasiswa'; const urls=['/fakultas','/kategori-disabilitas','/angkatan','']; (async()=>{for(const u of urls){const res=await fetch(base+u,{headers:{Authorization:`Bearer ${token}`}}); const text=await res.text(); console.log('URL',u||'/', 'STATUS',res.status,'BODY',text.slice(0,400));}})().catch(err=>{console.error(err);process.exit(1);})\""
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "probe-mahasiswa-fakultas",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'1',role:'ADMIN'}),'x'].join('.'); fetch('http://localhost:3000/api/mahasiswa/fakultas',{headers:{Authorization:'Bearer '+token}}).then(async r=>{const t=await r.text(); console.log('STATUS',r.status); console.log(t);}).catch(err=>{console.error(err); process.exit(1);});"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "build-mahasiswa-fix",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"node_modules/next/dist/bin/next",
+				"build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "pid-3000",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"netstat -ano | findstr LISTENING | findstr :3000"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "start-prod-restart",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"start"
+			],
+			"isBackground": true,
+			"group": "build"
+		},
+		{
+			"label": "kill-3000",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"taskkill",
+				"/PID",
+				"20688",
+				"/F"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "start-prod-fresh",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"start"
+			],
+			"isBackground": true,
+			"group": "build"
+		},
+		{
+			"label": "build-mahasiswa-crud",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"node_modules/next/dist/bin/next",
+				"build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "check-3000-pid",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"netstat -ano | findstr LISTENING | findstr :3000"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "start-prod-fresh-2",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"start"
+			],
+			"isBackground": true,
+			"group": "build"
+		},
+		{
+			"label": "probe-mahasiswa-read",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'1',role:'ADMIN'}),'x'].join('.'); const headers={Authorization:'Bearer '+token}; const urls=['http://localhost:3000/api/mahasiswa','http://localhost:3000/api/mahasiswa/fakultas','http://localhost:3000/api/mahasiswa/kategori-disabilitas','http://localhost:3000/api/mahasiswa/angkatan']; (async()=>{for(const url of urls){const res=await fetch(url,{headers}); const text=await res.text(); console.log('\\nURL',url); console.log('STATUS',res.status); console.log(text.slice(0,300));}})().catch(err=>{console.error(err); process.exit(1);});"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "probe-prodi",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'1',role:'ADMIN'}),'x'].join('.'); fetch('http://localhost:3000/api/mahasiswa/prodi?fakultasId=1',{headers:{Authorization:'Bearer '+token}}).then(async res=>{const text=await res.text(); console.log('STATUS',res.status); console.log(text.slice(0,300));}).catch(err=>{console.error(err);process.exit(1);});"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "probe-create-mahasiswa",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'1',role:'ADMIN'}),'x'].join('.'); fetch('http://localhost:3000/api/mahasiswa/create-mahasiswa',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:'{}'}).then(async res=>{console.log('STATUS',res.status); console.log(await res.text());}).catch(err=>{console.error(err);process.exit(1);});"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "probe-update-delete-mahasiswa",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'1',role:'ADMIN'}),'x'].join('.'); const headers={Authorization:'Bearer '+token,'Content-Type':'application/json'}; Promise.all([fetch('http://localhost:3000/api/mahasiswa/update-mahasiswa/999999',{method:'PUT',headers,body:'{}'}), fetch('http://localhost:3000/api/mahasiswa/delete-mahasiswa/999999',{method:'DELETE',headers})]).then(async results=>{for (const res of results){console.log('STATUS',res.status); console.log(await res.text());}}).catch(err=>{console.error(err);process.exit(1);});"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "probe-kategori-crud",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'1',role:'ADMIN'}),'x'].join('.'); const headers={Authorization:'Bearer '+token,'Content-Type':'application/json'}; Promise.all([fetch('http://localhost:3000/api/mahasiswa/kategori-disabilitas/999999',{method:'PUT',headers,body:JSON.stringify({kategori:'X',jenis_id:1})}), fetch('http://localhost:3000/api/mahasiswa/kategori-disabilitas/999999',{method:'DELETE',headers})]).then(async results=>{for(const res of results){console.log('STATUS',res.status); console.log(await res.text());}}).catch(err=>{console.error(err);process.exit(1);});"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "probe-admin-tests",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'1',role:'ADMIN'}),'x'].join('.'); fetch('http://localhost:3000/api/admin/tests',{headers:{Authorization:'Bearer '+token}}).then(async res=>{console.log('STATUS',res.status); console.log(await res.text());}).catch(err=>{console.error(err); process.exit(1);});"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "probe-admin-attempts",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'1',role:'ADMIN'}),'x'].join('.'); fetch('http://localhost:3000/api/admin/attempts',{headers:{Authorization:'Bearer '+token}}).then(async res=>{console.log('STATUS',res.status); console.log(await res.text());}).catch(err=>{console.error(err); process.exit(1);});"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "probe-pmjd-tests",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'1',role:'ADMIN'}),'x'].join('.'); fetch('http://localhost:3000/api/admin/tests',{headers:{Authorization:'Bearer '+token}}).then(async res=>{console.log('STATUS',res.status); console.log(await res.text());}).catch(err=>{console.error(err); process.exit(1);});"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "probe-pmjd-attempts",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'1',role:'ADMIN'}),'x'].join('.'); fetch('http://localhost:3000/api/admin/attempts',{headers:{Authorization:'Bearer '+token}}).then(async res=>{console.log('STATUS',res.status); console.log(await res.text());}).catch(err=>{console.error(err); process.exit(1);});"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "build-pmjd-fix",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"node_modules/next/dist/bin/next",
+				"build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "check-port-3000-current",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"netstat -ano | findstr LISTENING | findstr :3000"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "kill-old-pmjd-server",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"taskkill",
+				"/PID",
+				"8080",
+				"/F"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "start-pmjd-server-fresh",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"start"
+			],
+			"isBackground": true,
+			"group": "build"
+		},
+		{
+			"label": "probe-pmjd-tests-fresh",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'1',role:'ADMIN'}),'x'].join('.'); fetch('http://localhost:3000/api/admin/tests',{headers:{Authorization:'Bearer '+token}}).then(async res=>{console.log('STATUS',res.status); console.log(await res.text());}).catch(err=>{console.error(err); process.exit(1);});"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "probe-pmjd-attempts-fresh",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'1',role:'ADMIN'}),'x'].join('.'); fetch('http://localhost:3000/api/admin/attempts',{headers:{Authorization:'Bearer '+token}}).then(async res=>{console.log('STATUS',res.status); console.log(await res.text());}).catch(err=>{console.error(err); process.exit(1);});"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "probe-pmjd-create-delete",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'1',role:'ADMIN'}),'x'].join('.'); const headers={'Authorization':'Bearer '+token,'Content-Type':'application/json'}; (async()=>{const create=await fetch('http://localhost:3000/api/admin/tests',{method:'POST',headers,body:JSON.stringify({title:'TMP PMJD TEST',description:'temporary test',typeName:'COLLEGE_READINESS'})}); const createdText=await create.text(); console.log('CREATE_STATUS',create.status); console.log(createdText); if(!create.ok) return; const created=JSON.parse(createdText); const id=created?.test?.id; if(!id){console.log('NO_ID'); return;} const del=await fetch('http://localhost:3000/api/admin/tests/'+id,{method:'DELETE',headers:{Authorization:'Bearer '+token}}); console.log('DELETE_STATUS',del.status); console.log(await del.text());})();"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "build-pmjd-questions",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"node_modules/next/dist/bin/next",
+				"build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "pid-3000-now",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"netstat -ano | findstr LISTENING | findstr :3000"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "kill-old-29392",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"taskkill",
+				"/PID",
+				"29392",
+				"/F"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "start-pmjd-server-final",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"start"
+			],
+			"isBackground": true,
+			"group": "build"
+		},
+		{
+			"label": "probe-pmjd-full-crud",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'1',role:'ADMIN'}),'x'].join('.'); const headers={'Authorization':'Bearer '+token,'Content-Type':'application/json'}; (async()=>{const createTest=await fetch('http://localhost:3000/api/admin/tests',{method:'POST',headers,body:JSON.stringify({title:'TMP PMJD FULL CRUD',description:'temporary test',typeName:'COLLEGE_READINESS'})}); const createTestText=await createTest.text(); console.log('CREATE_TEST',createTest.status,createTestText); if(!createTest.ok) return; const testId=JSON.parse(createTestText)?.test?.id; if(!testId){console.log('NO_TEST_ID'); return;} const addQuestion=await fetch('http://localhost:3000/api/admin/tests/'+testId+'/questions',{method:'POST',headers,body:JSON.stringify({text:'Temporary question?',questionType:'MULTIPLE_CHOICE',options:['A','B'],answer:'A',autoScore:1})}); const addQuestionText=await addQuestion.text(); console.log('ADD_QUESTION',addQuestion.status,addQuestionText); if(!addQuestion.ok) { await fetch('http://localhost:3000/api/admin/tests/'+testId,{method:'DELETE',headers:{Authorization:'Bearer '+token}}); return; } const questionId=JSON.parse(addQuestionText)?.question?.id; if(!questionId){console.log('NO_QUESTION_ID'); await fetch('http://localhost:3000/api/admin/tests/'+testId,{method:'DELETE',headers:{Authorization:'Bearer '+token}}); return;} const updateQuestion=await fetch('http://localhost:3000/api/admin/questions/'+questionId,{method:'PUT',headers,body:JSON.stringify({text:'Temporary question updated?',questionType:'MULTIPLE_CHOICE',options:['X','Y'],answer:'X',autoScore:2})}); console.log('UPDATE_QUESTION',updateQuestion.status,await updateQuestion.text()); const deleteQuestion=await fetch('http://localhost:3000/api/admin/questions/'+questionId,{method:'DELETE',headers:{Authorization:'Bearer '+token}}); console.log('DELETE_QUESTION',deleteQuestion.status,await deleteQuestion.text()); const deleteTest=await fetch('http://localhost:3000/api/admin/tests/'+testId,{method:'DELETE',headers:{Authorization:'Bearer '+token}}); console.log('DELETE_TEST',deleteTest.status,await deleteTest.text());})();"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "cleanup-and-verify-question-update",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'1',role:'ADMIN'}),'x'].join('.'); const headers={'Authorization':'Bearer '+token,'Content-Type':'application/json'}; (async()=>{const updateQuestion=await fetch('http://localhost:3000/api/admin/questions/5',{method:'PUT',headers,body:JSON.stringify({text:'Temporary question updated?',questionType:'MULTIPLE_CHOICE',options:['X','Y'],answer:'X',autoScore:2})}); console.log('UPDATE_QUESTION',updateQuestion.status,await updateQuestion.text()); const deleteQuestion=await fetch('http://localhost:3000/api/admin/questions/5',{method:'DELETE',headers:{Authorization:'Bearer '+token}}); console.log('DELETE_QUESTION',deleteQuestion.status,await deleteQuestion.text()); const deleteTest=await fetch('http://localhost:3000/api/admin/tests/4',{method:'DELETE',headers:{Authorization:'Bearer '+token}}); console.log('DELETE_TEST',deleteTest.status,await deleteTest.text());})();"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "check-temp-test-remaining",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'1',role:'ADMIN'}),'x'].join('.'); fetch('http://localhost:3000/api/admin/tests',{headers:{Authorization:'Bearer '+token}}).then(async res=>{const text=await res.text(); console.log(text);}).catch(err=>{console.error(err); process.exit(1);});"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "probe-camaba-test-endpoint",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'2',role:'PARTICIPANT'}),'x'].join('.'); fetch('http://localhost:3000/api/test',{headers:{Authorization:'Bearer '+token}}).then(async res=>{console.log('STATUS',res.status); console.log(await res.text());}).catch(err=>{console.error(err); process.exit(1);});"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "build-camaba-fix",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"node_modules/next/dist/bin/next",
+				"build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "find-3000-pid",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"netstat -ano | findstr LISTENING | findstr :3000"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "kill-old-camaba-server",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"taskkill",
+				"/PID",
+				"16584",
+				"/F"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "start-camaba-server-fresh",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"start"
+			],
+			"isBackground": true,
+			"group": "build"
+		},
+		{
+			"label": "probe-camaba-list",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'2',role:'PARTICIPANT'}),'x'].join('.'); fetch('http://localhost:3000/api/test',{headers:{Authorization:'Bearer '+token}}).then(async res=>{console.log('STATUS',res.status); console.log(await res.text());}).catch(err=>{console.error(err); process.exit(1);});"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "probe-camaba-status",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'2',role:'PARTICIPANT'}),'x'].join('.'); fetch('http://localhost:3000/api/test/status',{headers:{Authorization:'Bearer '+token}}).then(async res=>{console.log('STATUS',res.status); console.log(await res.text());}).catch(err=>{console.error(err); process.exit(1);});"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "probe-camaba-test-detail",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'2',role:'PARTICIPANT'}),'x'].join('.'); fetch('http://localhost:3000/api/test/1',{headers:{Authorization:'Bearer '+token}}).then(async res=>{console.log('STATUS',res.status); console.log(await res.text());}).catch(err=>{console.error(err); process.exit(1);});"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "probe-camaba-result",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'2',role:'PARTICIPANT'}),'x'].join('.'); fetch('http://localhost:3000/api/test/1/result?attemptId=2',{headers:{Authorization:'Bearer '+token}}).then(async res=>{console.log('STATUS',res.status); console.log(await res.text());}).catch(err=>{console.error(err); process.exit(1);});"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "probe-camaba-submit-invalid",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const enc=o=>Buffer.from(JSON.stringify(o)).toString('base64url'); const token=[enc({alg:'none',typ:'JWT'}),enc({userId:'2',role:'PARTICIPANT'}),'x'].join('.'); fetch('http://localhost:3000/api/test/1/submit',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({answers:'not-json'})}).then(async res=>{console.log('STATUS',res.status); console.log(await res.text());}).catch(err=>{console.error(err); process.exit(1);});"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "probe-login-pst1001",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"fetch('http://localhost:3000/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({registrationNumber:'PST-1001'})}).then(async r=>{console.log('STATUS',r.status); console.log(await r.text());}).catch(e=>{console.error(e);process.exit(1);});"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "probe-login-pst1001-2",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"fetch('http://localhost:3000/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({registrationNumber:'PST-1001'})}).then(async r=>{console.log('STATUS',r.status); console.log(await r.text());}).catch(e=>{console.error(e);process.exit(1);});"
+			],
+			"isBackground": false,
+			"group": "build"
+		}
+	]
+}

@@ -62,7 +62,9 @@ api.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
     const token = getAuthToken();
 
-    const isAuthedPath = typeof config.url === "string" && (config.url.startsWith("/admin") || config.url.startsWith("/test"));
+    const isAuthedPath =
+      typeof config.url === "string" &&
+      (config.url.startsWith("/admin") || config.url.startsWith("/test") || config.url.startsWith("/mahasiswa") || config.url.startsWith("/berita"));
 
     const hasAuthHeader = !!config.headers?.Authorization;
 

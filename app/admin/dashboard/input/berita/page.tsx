@@ -383,6 +383,32 @@ export default function BeritaAdminPage() {
   };
 
   const removeExistingImage = (index: number) => {
+    const filename = existingImages[index];
+    if (!filename) return;
+
+    // If editing an existing berita, perform immediate delete on server
+    if (editingId) {
+      (async () => {
+        try {
+          if (!token) { addToast('Belum login', 'error'); return; }
+          const API_BASE = process.env.NEXT_PUBLIC_API_URL || window.location.origin;
+          const res = await fetch(`${API_BASE}/api/berita/delete-image/${editingId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ filename }),
+          });
+          const body = await parseJSON(res);
+          if (!res.ok) { addToast(body?.message || 'Gagal menghapus gambar', 'error'); return; }
+          setExistingImages(prev => prev.filter((_, i) => i !== index));
+          addToast('Gambar dihapus', 'success');
+        } catch (err) {
+          console.error(err);
+          addToast('Error menghapus gambar', 'error');
+        }
+      })();
+      return;
+    }
+
     setExistingImages(prev => prev.filter((_, i) => i !== index));
   };
 
@@ -391,7 +417,8 @@ export default function BeritaAdminPage() {
     if (!trimmed) return "";
     if (/^https?:\/\//i.test(trimmed)) return trimmed;
     const cleaned = trimmed.replace(/^uploads[\\/]+berita[\\/]+/i, "");
-    return `http://localhost:3000/uploads/berita/${encodeURIComponent(cleaned)}`;
+    const API_BASE = (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')) || window.location.origin;
+    return `${API_BASE}/uploads/berita/${encodeURIComponent(cleaned)}`;
   };
 
   const handleAddCategory = async (e:FormEvent) => {
@@ -595,7 +622,7 @@ export default function BeritaAdminPage() {
           <div className="md:col-span-2">
             <label className="block text-sm font-medium">Konten</label>
             <div className="mt-1 bg-white border rounded">
-              <div ref={quillContainerRef} className="min-h-[200px]" />
+              <div ref={quillContainerRef} className="min-h-50" />
             </div>
             <div className="mt-2 rounded border border-dashed p-3 bg-gray-50">
               <p className="text-sm font-medium">Resize Gambar di Konten</p>
@@ -885,7 +912,7 @@ export default function BeritaAdminPage() {
       </div>
 
       {deleteTargetId !== null && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 p-4">
+        <div className="fixed inset-0 z-80 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-md rounded-xl bg-white p-5 shadow-2xl">
             <h3 className="text-lg font-semibold">Konfirmasi Hapus Berita</h3>
             <p className="mt-2 text-sm text-gray-700">Berita yang dihapus tidak bisa dikembalikan. Lanjutkan?</p>
@@ -911,7 +938,7 @@ export default function BeritaAdminPage() {
         </div>
       )}
 
-      <div className="fixed right-4 top-24 z-[75] flex max-w-sm flex-col gap-2">
+      <div className="fixed right-4 top-24 z-75 flex max-w-sm flex-col gap-2">
         {toasts.map(t=> (
           <div key={t.id} className={`px-4 py-2 rounded shadow text-white ${t.type==='error'? 'bg-red-500' : t.type==='success'? 'bg-green-600' : 'bg-gray-700'}`}>{t.message}</div>
         ))}

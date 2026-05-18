@@ -2,7 +2,11 @@ import { parseBeritaFormData } from "@/lib/beritaUpload";
 import { callExpressHandler } from "@/lib/nextExpressAdapter";
 import { requireAdmin } from "@/lib/requireAdmin";
 
-const beritaController = require("@/lib/services/beritaController") as {
+const beritaControllerModule = require("@/lib/services/beritaController") as {
+  updateBerita: (req: unknown, res: unknown, next?: unknown) => unknown;
+  default?: Record<string, unknown>;
+};
+const beritaController = (beritaControllerModule.default ?? beritaControllerModule) as {
   updateBerita: (req: unknown, res: unknown, next?: unknown) => unknown;
 };
 

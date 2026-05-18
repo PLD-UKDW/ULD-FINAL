@@ -35,7 +35,7 @@ const login = async (req: Request, res: Response) => {
             },
           });
             await transporter.sendMail({
-                from: process.env.EMAIL_USER,
+                                from: process.env.MAIL_USER,
                 to: "kkngondangukdw@gmail.com",
                 subject: "OTP Login Admin",
                 html: `
@@ -146,7 +146,7 @@ const resendOtp = async (req: Request, res: Response) => {
         });
 
         await transporter.sendMail({
-            from: process.env.EMAIL_USER,
+            from: process.env.MAIL_USER,
             to: "kkngondangukdw@gmail.com",
             subject: "OTP Login Admin",
             html: `
@@ -164,4 +164,6 @@ const resendOtp = async (req: Request, res: Response) => {
     }
 };
 
-module.exports = { login, verifyAdmin, resendOtp };
+export { login, resendOtp, verifyAdmin };
+
+export default { login, verifyAdmin, resendOtp };

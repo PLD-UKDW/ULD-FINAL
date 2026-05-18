@@ -73,6 +73,24 @@ function mapApiToBerita(item: unknown, categoryMap: Map<number, string>): Berita
   } as Berita;
 }
 
+async function parseJsonSafely(res: Response) {
+  const contentType = res.headers.get("content-type") || "";
+  if (contentType.includes("application/json")) {
+    try {
+      return await res.json();
+    } catch {
+      return null;
+    }
+  }
+
+  try {
+    const text = await res.text();
+    return text ? { message: text } : null;
+  } catch {
+    return null;
+  }
+}
+
 function BeritaDetail({ berita, onBack, otherBerita }: { berita: Berita; onBack: () => void; otherBerita: Berita[] }) {
   return (
     <div className="min-h-screen">
@@ -225,8 +243,8 @@ export default function BeritaUmumPage() {
         if (!categoriesRes.ok) {
           throw new Error(`Gagal memuat kategori berita (${categoriesRes.status})`);
         }
-        const json = await beritaRes.json();
-        const categoryJson = await categoriesRes.json();
+        const json = await parseJsonSafely(beritaRes);
+        const categoryJson = await parseJsonSafely(categoriesRes);
         const data = Array.isArray(json?.data) ? json.data : Array.isArray(json) ? json : [];
         const categoryData = Array.isArray(categoryJson?.data) ? categoryJson.data : Array.isArray(categoryJson) ? categoryJson : [];
         const categoryMap = new Map<number, string>(categoryData.map((item: BeritaCategory) => [Number(item.id), String(item.name)]));

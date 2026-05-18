@@ -28,6 +28,10 @@ async function parseRequestBody(request: Request) {
 }
 
 export async function callExpressHandler(handler: ExpressLikeHandler, options: AdapterOptions) {
+  if (typeof handler !== "function") {
+    console.error("[callExpressHandler] handler is not a function", { handler });
+    return Response.json({ message: "Internal server error: handler is not a function" }, { status: 500 });
+  }
   const body = options.body !== undefined ? options.body : await parseRequestBody(options.request);
   const searchParams = new URL(options.request.url).searchParams;
   const query = Object.fromEntries(searchParams.entries());

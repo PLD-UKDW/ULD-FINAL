@@ -1,16 +1,27 @@
-import { callExpressHandler } from "@/lib/nextExpressAdapter";
 import { requireAdmin } from "@/lib/requireAdmin";
-const adminController = require("@/lib/services/adminController") as {
-  listTests: (req: unknown, res: unknown) => unknown;
-  createTest: (req: unknown, res: unknown) => unknown;
-};
+
+const prisma = require("@/lib/utils/prisma") as any;
 
 export const runtime = "nodejs";
 
 export async function GET(request: Request) {
   try {
     await requireAdmin(request);
-    return callExpressHandler(adminController.listTests, { request });
+
+    const tests = await prisma.test.findMany({
+      include: { questions: true },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return Response.json(
+      tests.map((test: any) => ({
+        ...test,
+        questions: test.questions?.map((question: any) => ({
+          ...question,
+          questionType: question.questionType === "MCQ" ? "MULTIPLE_CHOICE" : question.questionType,
+        })),
+      })),
+    );
   } catch (error) {
     if (error instanceof Response) return error;
     console.error("listTests:", error);
@@ -21,16 +32,29 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     await requireAdmin(request);
-    let body: any = undefined;
-    try {
-      const contentType = request.headers.get("content-type") ?? "";
-      if (contentType.includes("application/json")) {
-        body = await request.json();
-      }
-    } catch {
-      // body parse error will be handled by controller
+
+    const body = await request.json().catch(() => null);
+    const { title, description, typeName } = body ?? {};
+
+    if (!title || !typeName) {
+      return Response.json({ message: "Judul dan tipe test wajib diisi" }, { status: 400 });
     }
-    return callExpressHandler(adminController.createTest, { request, body });
+
+    const type = await prisma.testType.upsert({
+      where: { name: String(typeName).trim() },
+      update: {},
+      create: { name: String(typeName).trim() },
+    });
+
+    const test = await prisma.test.create({
+      data: {
+        title: String(title).trim(),
+        description: description ? String(description).trim() : null,
+        type: { connect: { id: type.id } },
+      },
+    });
+
+    return Response.json({ message: "Test created successfully", test }, { status: 201 });
   } catch (error) {
     if (error instanceof Response) return error;
     console.error("createTest:", error);

@@ -255,11 +255,11 @@
 
 
 
-import { useSearchParams } from "next/navigation";
 import { API_BASE } from "@/lib/api";
 import { getAuthToken } from "@/lib/auth.client";
 import { format } from "date-fns";
-import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
 type Attempt = {
   id: number;
@@ -285,7 +285,7 @@ type Question = {
   autoScore?: number;
 };
 
-export default function AdminScoringPage() {
+function ScoringInner() {
   const [token, setToken] = useState<string | null>(null);
   const [attempts, setAttempts] = useState<Attempt[]>([]);
   const [loading, setLoading] = useState(true);
@@ -308,7 +308,7 @@ export default function AdminScoringPage() {
     if (!token) return;
     try {
       const testId = params.get("test");
-      const url = testId ? `${API_BASE}/api/admin/attempts?testId=${testId}` : "${API_BASE}/api/admin/attempts";
+      const url = testId ? `${API_BASE}/api/admin/attempts?testId=${testId}` : `${API_BASE}/api/admin/attempts`;
 
       const res = await fetch(url, {
         headers: { Authorization: `Bearer ${token}` },
@@ -640,7 +640,6 @@ export default function AdminScoringPage() {
                     Set FAIL
                   </button>
                 </div>
-                npx prisma generate
               </div>
             </div>
 
@@ -653,5 +652,13 @@ export default function AdminScoringPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function AdminScoringPage() {
+  return (
+    <Suspense fallback={<div className="p-6">Memuat...</div>}>
+      <ScoringInner />
+    </Suspense>
   );
 }

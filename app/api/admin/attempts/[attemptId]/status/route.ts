@@ -1,24 +1,23 @@
-import { callExpressHandler } from "@/lib/nextExpressAdapter";
 import { requireAdmin } from "@/lib/requireAdmin";
-const adminController = require("@/lib/services/adminController") as {
-  setPassStatus: (req: unknown, res: unknown) => unknown;
-};
+
+const prisma = require("@/lib/utils/prisma") as any;
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request, { params }: { params: Promise<{ attemptId: string }> }) {
   try {
     await requireAdmin(request);
-    let body: any = undefined;
-    try {
-      const contentType = request.headers.get("content-type") ?? "";
-      if (contentType.includes("application/json")) {
-        body = await request.json();
-      }
-    } catch {
-      // body parse error will be handled by controller
-    }
-    return callExpressHandler(adminController.setPassStatus, { request, params: await params, body });
+
+    const { attemptId } = await params;
+    const body = await request.json().catch(() => null);
+    const { status } = body ?? {};
+
+    const updated = await prisma.attempt.update({
+      where: { id: Number(attemptId) },
+      data: { passStatus: status },
+    });
+
+    return Response.json({ message: "Status updated", updated });
   } catch (error) {
     if (error instanceof Response) return error;
     console.error("setPassStatus:", error);

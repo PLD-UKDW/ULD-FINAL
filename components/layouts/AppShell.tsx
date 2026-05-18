@@ -30,6 +30,7 @@ const LOGIN_SHORTCUT_PATHS = new Set([
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
+  const isAuthPage = pathname === "/login" || pathname === "/otp";
 
   useEffect(() => {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
@@ -65,7 +66,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-dvh flex flex-col">
-      <NavigationMenuDemo />
+      {!isAuthPage ? <NavigationMenuDemo /> : null}
       <main className="flex-1">{children}</main>
       <Footer />
     </div>

@@ -1,11 +1,8 @@
 import { callExpressHandler } from "@/lib/nextExpressAdapter";
-
-const statsController = require("@/lib/services/statsFiltering") as {
-  filterMahasiswa: (req: unknown, res: unknown, next?: unknown) => unknown;
-};
+import { filterMahasiswa } from "@/lib/services/statsFiltering";
 
 export const runtime = "nodejs";
 
 export async function GET(request: Request) {
-  return callExpressHandler(statsController.filterMahasiswa, { request });
+  return callExpressHandler(filterMahasiswa as any, { request });
 }

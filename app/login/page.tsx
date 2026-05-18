@@ -413,6 +413,23 @@ export default function LoginPage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const preferredVoiceRef = useRef<SpeechSynthesisVoice | null>(null);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // Clear stale auth markers when entering login so navbar doesn't show profile too early.
+    localStorage.removeItem("token");
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+    localStorage.removeItem("admin_token");
+
+    document.cookie = "authToken=; Max-Age=0; path=/";
+    document.cookie = "role=; Max-Age=0; path=/";
+    document.cookie = "authStage=; Max-Age=0; path=/";
+    document.cookie = "pendingRegNumber=; Max-Age=0; path=/";
+
+    window.dispatchEvent(new Event("auth-change"));
+  }, []);
+
   const getPreferredVoice = useCallback((): SpeechSynthesisVoice | null => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) return null;
 
@@ -684,17 +701,25 @@ export default function LoginPage() {
         const testId = res.data.testId || res.data.user?.testId;
 
         localStorage.setItem("token", res.data.token);
+        localStorage.setItem("authToken", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.user));
+        // signal other tabs/windows about sign-in and dispatch local event
+        try {
+          localStorage.setItem("auth:signin", String(Date.now()));
+          setTimeout(() => localStorage.removeItem("auth:signin"), 1000);
+        } catch (e) {
+          /* ignore */
+        }
         window.dispatchEvent(new Event("auth-change"));
 
         document.cookie = `authToken=${res.data.token}; path=/; max-age=86400`;
         document.cookie = `role=${role}; path=/; max-age=86400`;
 
         if (role === "ADMIN") {
-          await speakAndWait("Login berhasil. ... Anda akan dialihkan ke halaman admin.");
+          speakAndWait("Login berhasil. ... Anda akan dialihkan ke halaman admin.");
           router.push("/admin/dashboard");
         } else {
-          await speakAndWait("Login berhasil. ... Anda akan dialihkan ke halaman tes.");
+          speakAndWait("Login berhasil. ... Anda akan dialihkan ke halaman tes.");
           // window.location.href = "http://localhost:3000/dashboard/camaba";
           router.push("/dashboard/camaba");
         }
@@ -719,7 +744,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="bg-[#8db93f] min-h-[100dvh] flex items-start justify-center px-4 pb-8 pt-24 sm:px-6 sm:pt-28 lg:items-center lg:pt-32">
+    <div className="bg-[#8db93f] min-h-dvh flex items-start justify-center px-4 pb-8 pt-24 sm:px-6 sm:pt-28 lg:items-center lg:pt-32">
       <div className="w-full max-w-md bg-[#108607] rounded-2xl shadow-xl p-6 sm:p-8 lg:p-10">
         <div className="flex justify-center mb-6">
           <Image src="/logo/logould.png" width={120} height={120} alt="Logo" className="invert brightness-0" />

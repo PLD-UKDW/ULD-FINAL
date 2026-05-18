@@ -14,7 +14,12 @@ type SaveOptions = {
 const uploadDir = path.join(process.cwd(), "public", "uploads", "berita");
 
 async function ensureUploadDir() {
-  await fs.mkdir(uploadDir, { recursive: true });
+  try {
+    await fs.mkdir(uploadDir, { recursive: true });
+  } catch (err) {
+    console.error(`[beritaUpload] gagal membuat folder upload: ${uploadDir}`, err);
+    throw err;
+  }
 }
 
 function parseResizeWidth(value: unknown): number | null {
@@ -27,7 +32,13 @@ function parseResizeWidth(value: unknown): number | null {
 }
 
 async function saveFile(file: File, options: SaveOptions) {
-  const buffer = Buffer.from(await file.arrayBuffer());
+  let buffer: Buffer;
+  try {
+    buffer = Buffer.from(await file.arrayBuffer()) as Buffer<ArrayBufferLike>;
+  } catch (err) {
+    console.error('[beritaUpload] gagal membaca file.arrayBuffer()', err, { name: file?.name, type: file?.type });
+    throw err;
+  }
   const extFromName = path.extname(file.name).toLowerCase();
   const extFromType = file.type === "image/jpeg"
     ? ".jpg"
@@ -37,7 +48,7 @@ async function saveFile(file: File, options: SaveOptions) {
         ? ".webp"
         : "";
   const ext = extFromName || extFromType || ".bin";
-  let output = buffer;
+  let output: Buffer<ArrayBufferLike> = buffer;
 
   if (file.type.startsWith("image/") && options.resizeWidth) {
     try {
@@ -55,8 +66,15 @@ async function saveFile(file: File, options: SaveOptions) {
 
   const filename = `${Date.now()}-${crypto.randomBytes(6).toString("hex")}${ext}`;
 
-  await fs.writeFile(path.join(uploadDir, filename), output);
-  return filename;
+  const targetPath = path.join(uploadDir, filename);
+  try {
+    await fs.writeFile(targetPath, output);
+    console.log(`[beritaUpload] saved ${filename} (${(output.length||0)} bytes) to ${targetPath}`);
+    return filename;
+  } catch (err) {
+    console.error(`[beritaUpload] gagal menyimpan file ke ${targetPath}`, err);
+    throw err;
+  }
 }
 
 export async function parseBeritaFormData(request: Request) {

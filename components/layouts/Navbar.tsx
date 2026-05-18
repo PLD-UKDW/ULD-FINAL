@@ -40,6 +40,7 @@ export function NavigationMenuDemo() {
   const [dashboardHref, setDashboardHref] = useState("/dashboard/camaba");
   const pathname = usePathname();
   const router = useRouter();
+  const isAuthPage = pathname === "/login" || pathname === "/otp";
 
   useEffect(() => {
     const syncAuthStatus = () => {
@@ -66,10 +67,14 @@ export function NavigationMenuDemo() {
     syncAuthStatus();
     window.addEventListener("storage", syncAuthStatus);
     window.addEventListener("auth-change", syncAuthStatus);
+    window.addEventListener("pageshow", syncAuthStatus);
+    window.addEventListener("focus", syncAuthStatus);
 
     return () => {
       window.removeEventListener("storage", syncAuthStatus);
       window.removeEventListener("auth-change", syncAuthStatus);
+      window.removeEventListener("pageshow", syncAuthStatus);
+      window.removeEventListener("focus", syncAuthStatus);
     };
   }, [pathname]);
 
@@ -80,6 +85,19 @@ export function NavigationMenuDemo() {
     document.cookie = "role=; Max-Age=0; path=/";
     document.cookie = "authStage=; Max-Age=0; path=/";
     document.cookie = "pendingRegNumber=; Max-Age=0; path=/";
+    localStorage.removeItem("token");
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+    localStorage.removeItem("admin_token");
+
+    // Signal other tabs/windows that sign-out occurred
+    try {
+      localStorage.setItem("auth:signout", String(Date.now()));
+      // remove the marker quickly
+      setTimeout(() => localStorage.removeItem("auth:signout"), 1000);
+    } catch (e) {
+      /* ignore */
+    }
 
     window.dispatchEvent(new Event("auth-change"));
     setLoggedIn(false);
@@ -197,7 +215,7 @@ export function NavigationMenuDemo() {
           </NavigationMenu>
         </div>
         <div className="hidden min-[975px]:flex items-center gap-4">
-          {loggedIn ? (
+          {!isAuthPage && loggedIn ? (
             <>
               <Link
                 href={dashboardHref}
@@ -211,11 +229,11 @@ export function NavigationMenuDemo() {
                 Logout
               </button>
             </>
-          ) : (
+          ) : !isAuthPage ? (
             <Link href="/login" className="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-[#008000] shadow hover:bg-gray-100 transition">
               Login
             </Link>
-          )}
+          ) : null}
         </div>
       </div>
       {mobileOpen && (
@@ -297,7 +315,7 @@ export function NavigationMenuDemo() {
               </Link>
             </li>
             <li>
-              {loggedIn ? (
+              {!isAuthPage && loggedIn ? (
                 <div className="mt-2 space-y-2">
                   <Link href={dashboardHref} className="flex w-full items-center gap-3 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-[#108607] shadow hover:bg-gray-100 transition" onClick={() => setMobileOpen(false)}>
                     <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#108607] text-white font-bold">{profileInitial}</span>
@@ -307,11 +325,11 @@ export function NavigationMenuDemo() {
                     Logout
                   </button>
                 </div>
-              ) : (
+              ) : !isAuthPage ? (
                 <Link href="/login" className="block rounded-xl bg-white px-4 py-2 text-sm font-semibold text-[#008000] shadow hover:bg-gray-100 transition mt-2" onClick={() => setMobileOpen(false)}>
                   Login
                 </Link>
-              )}
+              ) : null}
             </li>
           </ul>
         </div>

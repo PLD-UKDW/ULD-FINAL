@@ -61,7 +61,15 @@ type Prodi = {
 export default function MahasiswaForm() {
     const [token, setToken] = useState<string | null>(null);
     useEffect(() => {
-        setToken(getAuthToken());
+        const syncToken = () => setToken(getAuthToken());
+        syncToken();
+        window.addEventListener("auth-change", syncToken);
+        window.addEventListener("storage", syncToken);
+
+        return () => {
+            window.removeEventListener("auth-change", syncToken);
+            window.removeEventListener("storage", syncToken);
+        };
     }, []);
     const [fakultasList, setFakultasList] = useState<Fakultas[]>([]);
     const [prodiList, setProdiList] = useState<Prodi[]>([]);

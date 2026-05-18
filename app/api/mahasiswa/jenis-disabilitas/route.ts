@@ -1,11 +1,17 @@
-import { callExpressHandler } from "@/lib/nextExpressAdapter";
+import { requireAdmin } from "@/lib/requireAdmin";
 
-const mahasiswaController = require("@/lib/services/mahasiswaController") as {
-  getAllJenisDisabilitas: (req: unknown, res: unknown, next?: unknown) => unknown;
-};
+const prisma = require("@/lib/utils/prisma") as any;
 
 export const runtime = "nodejs";
 
 export async function GET(request: Request) {
-  return callExpressHandler(mahasiswaController.getAllJenisDisabilitas, { request });
+  try {
+    await requireAdmin(request);
+    const data = await prisma.jenisDisabilitas.findMany({ orderBy: { jenis: "asc" }, select: { id: true, jenis: true } });
+    return Response.json(data);
+  } catch (error) {
+    if (error instanceof Response) return error;
+    const message = error instanceof Error ? error.message : "Server error";
+    return Response.json({ message }, { status: 500 });
+  }
 }

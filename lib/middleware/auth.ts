@@ -66,8 +66,14 @@ export const requireAuth = async (req: ExpressRequest, res: ExpressResponse, nex
 
   const token = authHeader.split(" ")[1];
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId?: string };
-    const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId?: string | number };
+    const userId = Number(decoded.userId);
+
+    if (!Number.isFinite(userId)) {
+      return res.status(401).json({ error: "Invalid token" });
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }

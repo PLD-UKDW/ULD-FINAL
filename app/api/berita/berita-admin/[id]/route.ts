@@ -1,9 +1,13 @@
 import { callExpressHandler } from "@/lib/nextExpressAdapter";
 import { requireAdmin } from "@/lib/requireAdmin";
 
-const beritaController = require("@/lib/services/beritaController") as {
+const beritaControllerModule = require("@/lib/services/beritaController") as {
   getBeritaByIdAdmin: (req: unknown, res: unknown, next?: unknown) => unknown;
+  default?: {
+    getBeritaByIdAdmin: (req: unknown, res: unknown, next?: unknown) => unknown;
+  };
 };
+const beritaController = beritaControllerModule.default ?? beritaControllerModule;
 
 export const runtime = "nodejs";
 

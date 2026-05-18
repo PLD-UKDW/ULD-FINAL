@@ -1,10 +1,7 @@
 import { callExpressHandler } from "@/lib/nextExpressAdapter";
+import { verifyAdmin } from "@/lib/services/login";
 
 export const runtime = "nodejs";
-
-const loginService = require("@/lib/services/login") as {
-  verifyAdmin: (req: unknown, res: unknown) => unknown;
-};
 
 export async function POST(request: Request) {
   try {
@@ -17,7 +14,7 @@ export async function POST(request: Request) {
     } catch {
       // body parse error will be handled by controller
     }
-    return callExpressHandler(loginService.verifyAdmin, { request, body });
+    return callExpressHandler(verifyAdmin as any, { request, body });
   } catch (error) {
     console.error(error);
     return Response.json({ message: "Server error" }, { status: 500 });

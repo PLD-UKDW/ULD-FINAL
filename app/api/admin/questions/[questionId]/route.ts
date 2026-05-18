@@ -1,25 +1,45 @@
-import { callExpressHandler } from "@/lib/nextExpressAdapter";
 import { requireAdmin } from "@/lib/requireAdmin";
-const adminController = require("@/lib/services/adminController") as {
-  updateQuestion: (req: unknown, res: unknown) => unknown;
-  deleteQuestion: (req: unknown, res: unknown) => unknown;
-};
+
+const prisma = require("@/lib/utils/prisma") as any;
 
 export const runtime = "nodejs";
 
 export async function PUT(request: Request, { params }: { params: Promise<{ questionId: string }> }) {
   try {
     await requireAdmin(request);
-    let body: any = undefined;
-    try {
-      const contentType = request.headers.get("content-type") ?? "";
-      if (contentType.includes("application/json")) {
-        body = await request.json();
-      }
-    } catch {
-      // body parse error will be handled by controller
+
+    const { questionId } = await params;
+    const questionIdNumber = Number(questionId);
+    if (!Number.isFinite(questionIdNumber)) {
+      return Response.json({ message: "Invalid questionId" }, { status: 400 });
     }
-    return callExpressHandler(adminController.updateQuestion, { request, params: await params, body });
+
+    const body = await request.json().catch(() => null);
+    const { text, options, answer, questionType, autoScore } = body ?? {};
+
+    const existing = await prisma.question.findUnique({ where: { id: questionIdNumber } });
+    if (!existing) {
+      return Response.json({ message: "Question not found" }, { status: 404 });
+    }
+
+    const normalizedType = questionType === "MCQ" ? "MULTIPLE_CHOICE" : questionType ?? existing.questionType;
+    const normalizedText = String(text ?? existing.text ?? "").trim();
+    const normalizedOptions = normalizedType === "MULTIPLE_CHOICE" ? (Array.isArray(options) ? options : []) : [];
+    const normalizedAnswer = normalizedType === "MULTIPLE_CHOICE" ? (typeof answer === "string" ? answer.trim() || null : existing.answer) : null;
+    const normalizedScore = normalizedType === "MULTIPLE_CHOICE" ? Number(autoScore ?? existing.autoScore ?? 0) : 0;
+
+    const updated = await prisma.question.update({
+      where: { id: questionIdNumber },
+      data: {
+        text: normalizedText,
+        options: normalizedOptions,
+        answer: normalizedAnswer,
+        questionType: normalizedType,
+        autoScore: normalizedScore,
+      },
+    });
+
+    return Response.json({ message: "Question updated successfully", updated });
   } catch (error) {
     if (error instanceof Response) return error;
     console.error("updateQuestion:", error);
@@ -30,7 +50,20 @@ export async function PUT(request: Request, { params }: { params: Promise<{ ques
 export async function DELETE(request: Request, { params }: { params: Promise<{ questionId: string }> }) {
   try {
     await requireAdmin(request);
-    return callExpressHandler(adminController.deleteQuestion, { request, params: await params });
+
+    const { questionId } = await params;
+    const questionIdNumber = Number(questionId);
+    if (!Number.isFinite(questionIdNumber)) {
+      return Response.json({ message: "Invalid questionId" }, { status: 400 });
+    }
+
+    const existing = await prisma.question.findUnique({ where: { id: questionIdNumber } });
+    if (!existing) {
+      return Response.json({ message: "Question not found" }, { status: 404 });
+    }
+
+    await prisma.question.delete({ where: { id: questionIdNumber } });
+    return Response.json({ message: "Question deleted" });
   } catch (error) {
     if (error instanceof Response) return error;
     console.error("deleteQuestion:", error);

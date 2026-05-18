@@ -263,12 +263,12 @@ const updateBerita = async (req: UploadRequest, res: Response, next: NextFunctio
             ? req.files.map((file) => file.filename)
             : (req.file ? [req.file.filename] : []);
 
-        let finalImages = existing;
-        if (newImages.length > 0) {
-            finalImages = [...newImages];
-        } else if (keepList.length > 0) {
-            finalImages = [...keepList];
-        }
+        const finalImages = Array.from(
+            new Set([
+                ...keepList,
+                ...newImages,
+            ].map((item) => path.basename(item)).filter(Boolean))
+        );
 
         const previousContentImages = [
             ...existing,
@@ -312,7 +312,7 @@ const updateBerita = async (req: UploadRequest, res: Response, next: NextFunctio
                 tanggal: tanggal !== undefined ? (tanggal ? new Date(tanggal) : null) : berita.tanggal,
                 lokasi: lokasi !== undefined ? (lokasi || null) : berita.lokasi,
                 isPublished: isPublished !== undefined ? (isPublished === "true" || isPublished === true) : berita.isPublished,
-                content_images: finalImages.length > 0 ? finalImages.join(",") : null,
+                content_images: finalImages.length > 0 ? finalImages.join(",") : "",
             },
             include: { category: true },
         });
@@ -368,6 +368,46 @@ const deleteBerita = async (req: Request, res: Response, next: NextFunction) => 
         return res.status(200).json({ message: "Berita berhasil dihapus" });
     } catch (err) {
         console.error(`[deleteBerita] Error occurred:`, err);
+        next(err as Error);
+    }
+};
+
+const deleteImageFromBerita = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const { filename } = req.body as { filename?: string };
+        if (!filename || typeof filename !== 'string') {
+            return res.status(400).json({ message: 'Filename wajib diberikan' });
+        }
+
+        const safeName = path.basename(filename);
+        const berita = await prisma.berita.findUnique({ where: { id: Number(id) } });
+        if (!berita) return res.status(404).json({ message: 'Berita tidak ditemukan' });
+
+        const existing = (berita.content_images || '')
+            .split(',')
+            .map((s: string) => s.trim())
+            .filter(Boolean);
+
+        const nextImages = existing.filter((img: string) => path.basename(img) !== safeName);
+
+        // delete file from disk if exists
+        const filePath = path.join(uploadDir, safeName);
+        try {
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+        } catch (err) {
+            console.error(`[deleteImageFromBerita] gagal menghapus file ${filePath}:`, err);
+        }
+
+        const updated = await prisma.berita.update({
+            where: { id: Number(id) },
+            data: { content_images: nextImages.length > 0 ? nextImages.join(',') : "" },
+        });
+
+        return res.json({ message: 'Gambar berhasil dihapus', data: updated });
+    } catch (err) {
         next(err as Error);
     }
 };
@@ -462,7 +502,15 @@ const deleteBeritaCategory = async (req: Request, res: Response, next: NextFunct
     }
 };
 
-module.exports = {
+export {
+    createBerita, createBeritaCategory, deleteBerita, deleteBeritaCategory, getBeritaAdmin, getBeritaByIdAdmin,
+    getBeritaByIdPublic, getBeritaCategories, getBeritaPublic, publishBerita,
+    unpublishBerita, updateBerita, updateBeritaCategory
+};
+
+    export { deleteImageFromBerita };
+
+export default {
     createBerita,
     getBeritaAdmin,
     getBeritaPublic,

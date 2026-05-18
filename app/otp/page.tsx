@@ -63,6 +63,8 @@ function OTPInner() {
       document.cookie = `pendingRegNumber=; path=/; max-age=0`;
       document.cookie = `authToken=${res.data.token}; path=/`;
       document.cookie = `role=ADMIN; path=/`;
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("authToken", res.data.token);
 
       router.replace("/admin/dashboard");
     } catch (err: unknown) {

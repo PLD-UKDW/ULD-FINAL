@@ -105,6 +105,28 @@ export default function CamabaDashboardPage() {
     },
   ];
 
+  const clearAuthState = useCallback(() => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+    localStorage.removeItem("admin_token");
+
+    document.cookie = "authToken=; Max-Age=0; path=/";
+    document.cookie = "role=; Max-Age=0; path=/";
+    document.cookie = "authStage=; Max-Age=0; path=/";
+    document.cookie = "pendingRegNumber=; Max-Age=0; path=/";
+
+    window.dispatchEvent(new Event("auth-change"));
+  }, []);
+
+  const logoutToLogin = useCallback(() => {
+    clearAuthState();
+    sessionStorage.removeItem("popupShown");
+    sessionStorage.removeItem("announceMainPage");
+    window.speechSynthesis.cancel();
+    window.location.replace("/login");
+  }, [clearAuthState]);
+
   /* =====================================================
      🔊 SPEECH QUEUE ENGINE
   ===================================================== */
@@ -298,11 +320,7 @@ export default function CamabaDashboardPage() {
 
         await speakQueueAndWait(["Anda akan logout."]);
 
-        window.speechSynthesis.cancel();
-        localStorage.removeItem("token");
-        sessionStorage.removeItem("popupShown");
-
-        window.location.href = "/login";
+        logoutToLogin();
       }
     };
 
@@ -389,18 +407,13 @@ export default function CamabaDashboardPage() {
 
         await speakQueueAndWait(["Anda keluar dari akun."]);
 
-        window.speechSynthesis.cancel();
-
-        localStorage.removeItem("token");
-        sessionStorage.removeItem("popupShown");
-
-        window.location.href = "/login";
+        logoutToLogin();
       }
     };
 
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [useTTS, useKeyboardNav, tests, selectedIndex, showAccessPopup, lastArrowLeftTime]);
+  }, [useTTS, useKeyboardNav, tests, selectedIndex, showAccessPopup, lastArrowLeftTime, logoutToLogin]);
 
   /* ==========================
      UI
@@ -408,7 +421,7 @@ export default function CamabaDashboardPage() {
   if (loading) return <p className="px-4 pt-24 text-black text-lg sm:px-6 sm:pt-28 sm:text-xl">Memuat...</p>;
 
   return (
-    <div className="min-h-[100dvh] max-w-5xl mx-auto px-4 pb-8 pt-24 text-black sm:px-6 sm:pt-28 lg:pt-32">
+    <div className="min-h-dvh max-w-5xl mx-auto px-4 pb-8 pt-24 text-black sm:px-6 sm:pt-28 lg:pt-32">
       {showAccessPopup && (
         <div role="dialog" aria-modal="true" className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded-xl w-full max-w-lg">
@@ -416,7 +429,7 @@ export default function CamabaDashboardPage() {
 
             <ul className="space-y-4">
               {accessOptions.map((opt, idx) => (
-                <li key={opt.id} className={`p-4 border rounded-lg ${idx === accessIndex ? "outline outline-2 outline-green-600" : ""}`}>
+                <li key={opt.id} className={`p-4 border rounded-lg ${idx === accessIndex ? "ring-2 ring-green-600" : ""}`}>
                   <p className="font-semibold text-xl">{opt.label}</p>
                   <p className="text-lg text-green-700">{opt.description}</p>
                 </li>
@@ -438,7 +451,7 @@ export default function CamabaDashboardPage() {
       {/* LIST TES */}
       <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
         {tests.map((t, idx) => (
-          <div key={t.id} className={`rounded-xl border bg-white p-4 shadow sm:p-6 ${useTTS && idx === selectedIndex ? "outline outline-3 outline-green-600" : ""}`}>
+          <div key={t.id} className={`rounded-xl border bg-white p-4 shadow sm:p-6 ${useTTS && idx === selectedIndex ? "ring-2 ring-green-600" : ""}`}>
             <h2 className="text-xl font-semibold sm:text-2xl">{t.title}</h2>
 
             <p className="mt-2 text-base text-green-700 sm:text-lg">{t.description}</p>

@@ -1,15 +1,14 @@
 import { callExpressHandler } from "@/lib/nextExpressAdapter";
 import { requireAdmin } from "@/lib/requireAdmin";
-
-const beritaController = require("@/lib/services/beritaController") as {
-  getBeritaCategories: (req: unknown, res: unknown, next?: unknown) => unknown;
-  createBeritaCategory: (req: unknown, res: unknown, next?: unknown) => unknown;
-};
+import {
+    createBeritaCategory,
+    getBeritaCategories,
+} from "@/lib/services/beritaController";
 
 export const runtime = "nodejs";
 
 export async function GET(request: Request) {
-  return callExpressHandler(beritaController.getBeritaCategories, { request });
+  return callExpressHandler(getBeritaCategories as any, { request });
 }
 
 export async function POST(request: Request) {
@@ -24,7 +23,7 @@ export async function POST(request: Request) {
     } catch {
       // body parse error will be handled by controller
     }
-    return callExpressHandler(beritaController.createBeritaCategory, { request, body });
+    return callExpressHandler(createBeritaCategory as any, { request, body });
   } catch (error) {
     if (error instanceof Response) return error;
     const message = error instanceof Error ? error.message : "Internal server error";

@@ -207,4 +207,6 @@ const filterMahasiswa = async (req: Request, res: Response) => {
     }
 };
 
-module.exports = { adminfilterMahasiswa, filterMahasiswa };
+export { adminfilterMahasiswa, filterMahasiswa };
+
+export default { adminfilterMahasiswa, filterMahasiswa };

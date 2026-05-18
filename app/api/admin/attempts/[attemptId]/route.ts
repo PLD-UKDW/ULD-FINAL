@@ -1,15 +1,21 @@
-import { callExpressHandler } from "@/lib/nextExpressAdapter";
 import { requireAdmin } from "@/lib/requireAdmin";
-const adminController = require("@/lib/services/adminController") as {
-  getAttemptDetail: (req: unknown, res: unknown) => unknown;
-};
+
+const prisma = require("@/lib/utils/prisma") as any;
 
 export const runtime = "nodejs";
 
 export async function GET(request: Request, { params }: { params: Promise<{ attemptId: string }> }) {
   try {
     await requireAdmin(request);
-    return callExpressHandler(adminController.getAttemptDetail, { request, params: await params });
+
+    const { attemptId } = await params;
+    const attempt = await prisma.attempt.findUnique({
+      where: { id: Number(attemptId) },
+      include: { user: true, test: true },
+    });
+
+    if (!attempt) return Response.json({ message: "Attempt not found" }, { status: 404 });
+    return Response.json(attempt);
   } catch (error) {
     if (error instanceof Response) return error;
     console.error("getAttemptDetail:", error);
